@@ -1,27 +1,33 @@
 spring:
   cloud:
     gateway:
-      default-filters:
-        - TokenRelay
       routes:
         - id: product-resource-server
           uri: http://localhost:9191
           predicates:
             - Path=/product/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+           
   security:
     oauth2:
       client:
         provider:
-          my-keycloak-provider:
-            issuer-uri: http://localhost:8180/auth/realms/microservices-realm
+          keycloak:
+            token-uri: http://localhost:8080/auth/realms/microservices-realm/protocol/openid-connect/token
+            authorization-uri: http://localhost:8080/auth/realms/microservices-realm/protocol/openid-connect/auth
+            user-name-attribute: preferred_username
         registration:
-          keycloak-spring-gateway-client:
-            provider: my-keycloak-provider
+          spring-cloud-gateway-client:
+            provider: keycloak
             client-id: spring-cloud-gateway-client
             client-secret: 33f5d3d1-2777-4c6b-97f7-964d8dfdd2af
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
-
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/auth/realms/microservices-realm/protocol/openid-connect/certs
 # Enable these to debug the Authorization flow
 logging:
     level:

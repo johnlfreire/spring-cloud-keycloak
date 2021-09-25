@@ -11,7 +11,7 @@ import com.br.sfb.microservice.repository.ProductRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductController {
 
